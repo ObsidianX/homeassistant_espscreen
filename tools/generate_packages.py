@@ -5,10 +5,15 @@ import re
 
 ROOT = Path(__file__).resolve().parents[1]
 REPO = 'https://github.com/MaxGramser/homeassistant_espscreen'
-REFS = {'cyd': 'main', 'guition': 'main'}
+REFS = {'cyd': 'main', 'guition': 'main', 'waveshare-4b': 'main'}
+SOURCES = {
+    'cyd': 'home-like-2432s028.yaml',
+    'guition': 'guition-4848s040.yaml',
+    'waveshare-4b': 'waveshare-esp32-s3-touch-lcd-4b.yaml'
+}
 
 def generate(board, text=None):
-    source = ROOT / ('home-like-2432s028.yaml' if board == 'cyd' else 'guition-4848s040.yaml')
+    source = ROOT / SOURCES[board]
     s = source.read_text() if text is None else text
     # The owner's wizard YAML supplies wifi/API/OTA credentials. No shared keys.
     s = re.sub(r'^  encryption:\n    key: !secret api_encryption_key\n', '', s, flags=re.M)
@@ -42,7 +47,7 @@ def main():
     parser.add_argument('--check', action='store_true')
     args = parser.parse_args()
     for board in REFS:
-        source = ROOT / ('home-like-2432s028.yaml' if board == 'cyd' else 'guition-4848s040.yaml')
+        source = ROOT / SOURCES[board]
         if not source.exists(): continue
         path = ROOT / 'packages' / f'{board}.yaml'
         expected = generate(board)
